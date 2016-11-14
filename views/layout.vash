@@ -147,6 +147,7 @@
           <div class="seven wide column">
             <h4 class="ui inverted header">The Social Cookbook</h4>
             <p>Project maintained by David Rutqvist and Erik Halén.</p>
+            <p><a href="https://github.com/DavidRutqvist/social-cookbook/">Github repository</a></p>
           </div>
         </div>
       </div>
