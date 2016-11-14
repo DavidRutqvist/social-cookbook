@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/stylesheets/style.css" />
 </head>
 <body>
-  
+
   <!-- Following Menu -->
   <div class="ui large top fixed hidden menu">
     <div class="ui container">
@@ -59,7 +59,7 @@
 
       <div class="ui text container">
         <h1 class="ui inverted header">
-          Imagine-a-Company
+          The Social Cookbook
         </h1>
         <h2>Do whatever you want when you want to.</h2>
         <div class="ui huge primary button">Get Started <i class="right arrow icon"></i></div>
