@@ -23,6 +23,25 @@ app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function(req, res, next) {
+  //Set up main navigation
+  res.locals.navigation = new Array();
+
+  res.locals.navigation.push({
+    path: "/",
+    title: "Home",
+    active: (req.path == "/")
+  });
+
+  res.locals.navigation.push({
+    path: "/about",
+    title: "About",
+    active: (req.path.startsWith("/about"))
+  });
+
+  next();
+});
+
 app.use('/', index);
 app.use('/users', users);
 
