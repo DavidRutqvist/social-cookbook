@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var config = require("./config");
 var request = require('request');
+var session = require('express-session')
 
 var index = require('./routes/index');
 
@@ -21,6 +22,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({ secret: "55zwpzLT" }));
 app.use("/public", require('less-middleware')(path.join(__dirname, 'public')));
 app.use("/public",  express.static(path.join(__dirname, 'public')));
 
@@ -29,21 +31,33 @@ app.use("/static", function(req, res) {//Pipe static requests to the api
 });
 
 app.use(function(req, res, next) {
+  if(req.path.toLowerCase() !== "/login") {
+    if((req.session !== undefined) && (req.session.userId !== undefined) && (req.session.token !== undefined)) {
+      next();
+    }
+    else {
+      res.redirect("/login");
+    }
+  }
+  else {
+    next();
+  }
+})
+
+app.use(function(req, res, next) {
   //Set up main navigation
   res.locals.navigation = new Array();
 
   res.locals.navigation.push({
     path: "/",
     title: "Home",
-    active: (req.path == "/"),
-    noAuth: true
+    active: (req.path == "/")
   });
 
   res.locals.navigation.push({
     path: "/about",
     title: "About",
-    active: (req.path.startsWith("/about")),
-    noAuth: true
+    active: (req.path.startsWith("/about"))
   });
 
   next();

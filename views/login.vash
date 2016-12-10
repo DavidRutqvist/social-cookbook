@@ -48,10 +48,42 @@ function statusChangeCallback(response) {
   if (response.status === 'connected') {
     // Logged into your app and Facebook.
     //Send token to backend
-    $("#token").val(response.authResponse.accessToken);
-    $("#userId").val(response.authResponse.userID);
-    $("#loginForm").submit();
+    ensureAllPermissionsGranted(response.authResponse.accessToken, function(granted) {
+      if(granted) {
+        $("#token").val(response.authResponse.accessToken);
+        $("#userId").val(response.authResponse.userID);
+        $("#loginForm").submit();
+      }
+      else {
+        FB.login(
+          function(response) {
+            statusChangeCallback(response);
+          },
+          {
+            scope: 'public_profile, email',
+            auth_type: 'rerequest'
+          }
+        );
+      }
+    });
   }
+}
+
+function ensureAllPermissionsGranted(token, callback) {
+  $.get("https://graph.facebook.com/v2.8/me/permissions?access_token=" + token, function(response) {
+    if((response !== undefined) && (response.data !== undefined)) {
+      for(var i = 0; i < response.data.length; i++) {
+        if(response.data[i].status !== "granted") {
+          return callback(false);
+        }
+      }
+
+      callback(true);
+    }
+    else {
+      callback(false);
+    }
+  });
 }
 
 // This function is called when someone finishes with the Login
@@ -73,7 +105,7 @@ window.fbAsyncInit = function() {
 
   FB.getLoginStatus(function(response) {
     statusChangeCallback(response);
-    });
+  });
 };
 
 // Load the Facebook SDK asynchronously
