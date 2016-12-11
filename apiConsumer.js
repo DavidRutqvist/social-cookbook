@@ -75,7 +75,12 @@ module.exports = {
     };
 
     client.methods.recipes(args, function(data, response) {
-      callback(data);
+      if(data.success === undefined) {
+        callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message), undefined);
+      }
     });
   },
   getRecipe: function(token, recipeId, callback) {

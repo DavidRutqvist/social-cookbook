@@ -41,7 +41,11 @@ module.exports = function(router, config) {
   });
 
   router.get('/', function(req, res, next) {
-    api.getRecipes(req.session.token, 1, function(response) {
+    api.getRecipes(req.session.token, 1, function(err, response) {
+      if(err) {
+        throw err;
+      }
+      
       var model = {
         title: 'Home',
         page: response.page,
