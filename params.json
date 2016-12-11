@@ -1,6 +1,6 @@
 {
   "name": "Social Cookbook",
   "tagline": "",
-  "body": "### Welcome to the Social Cookbook Documentation\r\nThis will be fixed in the future as the project develops.\r\n\r\n##Environments\r\nEverything is hosted at Digital Ocean. The full environment will be described below later.\r\n\r\n**Builder:** [Jenkins](http://139.59.211.203:8080)\r\n\r\n**Live Version (frontend):** [Experimental (Auto deploy of master-branch)](http://cookbook.rutqvist.com)\r\n\r\n**Live Version (API):** [Experimental (Auto deploy of master-branch)](http://cookbook.rutqvist.com/api)\r\n\r\n##Presentations\r\n",
+  "body": "### Welcome to the Social Cookbook Documentation\r\nThis will be fixed in the future as the project develops.\r\n\r\n##Environments\r\nEverything is hosted at Digital Ocean. The full environment will be described below later.\r\n\r\n**Builder:** [Jenkins](http://139.59.211.203:8080)\r\n\r\n**Live Version (frontend):** [Experimental (Auto deploy of master-branch)](http://cookbook.rutqvist.com)\r\n\r\n**Live Version (API):** [Experimental (Auto deploy of master-branch)](http://cookbook.rutqvist.com:8081/api)\r\n\r\n##Presentations\r\n",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
