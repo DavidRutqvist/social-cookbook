@@ -7,10 +7,25 @@ var bodyParser = require('body-parser');
 var config = require("./config");
 var request = require('request');
 var session = require('express-session')
-
-var index = require('./routes/index');
+var router = express.Router();
 
 var app = express();
+
+const commandLineArgs = require('command-line-args')
+const options = commandLineArgs([
+  {
+    name: 'api',
+    type: String,
+    defaultValue: 'http://localhost:3001'
+  },
+  {
+    name: 'fbAppId',
+    type: String,
+    defaultValue: '381247258888483'
+  }
+]);
+config.apiUrl = options.api;
+config.fbAppId = options.fbAppId;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +48,11 @@ app.use("/static", function(req, res) {//Pipe static requests to the api
 app.use(function(req, res, next) {
   if(req.path.toLowerCase() !== "/login") {
     if((req.session !== undefined) && (req.session.userId !== undefined) && (req.session.token !== undefined)) {
+      res.locals.user = {
+        id: req.session.userId,
+        firstName: req.session.firstName,
+        lastName: req.session.lastName
+      };
       next();
     }
     else {
@@ -54,12 +74,6 @@ app.use(function(req, res, next) {
     active: (req.path == "/")
   });
 
-  res.locals.navigation.push({
-    path: "/about",
-    title: "About",
-    active: (req.path.startsWith("/about"))
-  });
-
   next();
 });
 
@@ -68,7 +82,10 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use('/', index);
+app.use('/', router);
+
+var index = require('./routes/index')(router, config);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -85,7 +102,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('shared/error');
 });
 
 module.exports = app;

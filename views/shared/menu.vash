@@ -1,0 +1,27 @@
+<div class="ui fixed inverted menu">
+  <div class="ui container">
+    <a href="/" class="header item">
+      The Social Cookbook
+    </a>
+    @model.navigation.forEach(function(item) {
+      if(item.active) {
+        <a class="item active" href="@item.path">
+          @item.title
+        </a>
+      }
+      else {
+        <a class="item" href="@item.path">
+          @item.title
+        </a>
+      }
+    })
+    <div class="ui right floated simple dropdown item">
+      <img class="profile-picture" src="https://graph.facebook.com/v2.8/@model.user.id/picture" />
+      @model.user.firstName @model.user.lastName <i class="dropdown icon"></i>
+      <div class="menu">
+        <a class="item" href="/profile">Profile</a>
+        <a class="item" href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>

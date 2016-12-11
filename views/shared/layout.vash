@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>@model.title | The Social Cookbook</title>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/semantic.min.css">
+  <link rel="stylesheet" href="/public/stylesheets/style.css" />
+</head>
+<body>
+  @html.include("shared/menu", model)
+
+  <div class="ui main text container">
+    @html.block("content")
+  </div>
+
+  @html.include("shared/footer", model)
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/semantic.min.js"></script>
+  <script src="/public/javascripts/main.js"></script>
+
+</body>
+</html>
