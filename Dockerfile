@@ -13,4 +13,4 @@ COPY . /usr/src/app
 
 EXPOSE 3000
 ENTRYPOINT [ "npm", "start", "--" ]
-CMD [ "-a", "http://dev.api.fra1.cookbook.ltu.se", "-f", "328176260897246" ]
+CMD [ "-a", "http://dev.api.fra1.cookbook.ltu.se:8081", "-f", "328176260897246" ]
