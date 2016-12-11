@@ -15,11 +15,13 @@ const commandLineArgs = require('command-line-args')
 const options = commandLineArgs([
   {
     name: 'api',
+    alias: "a",
     type: String,
     defaultValue: 'http://localhost:3001'
   },
   {
     name: 'fbAppId',
+    alias: "f",
     type: String,
     defaultValue: '381247258888483'
   }
