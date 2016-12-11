@@ -40,7 +40,16 @@ module.exports = function(router, config) {
   });
 
   router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Home' });
+    api.getRecipes(req.session.token, 1, function(response) {
+      var model = {
+        title: 'Home',
+        page: response.page,
+        pageSize: response.pageCount,
+        count: response.totalCount,
+        recipes: response.recipes
+      };
+      res.render('index', model);
+    });
   });
 }
 

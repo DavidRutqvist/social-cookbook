@@ -6,6 +6,7 @@ var client = new Client();
 //Register methods
 client.registerMethod("authenticate", apiUrl + "/api/authenticate", "POST");
 client.registerMethod("register", apiUrl + "/api/register", "POST");
+client.registerMethod("recipes", apiUrl + "/api/recipes", "GET");
 
 //Map methods to module exports functions
 module.exports = {
@@ -59,5 +60,21 @@ module.exports = {
         callback(new Error(data.message), false);
       }
     })
+  },
+  getRecipes: function(token, page, callback) {
+    console.log("Getting recipes on page " + page);
+    var args = {
+      data: {
+        page: page
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+
+    client.methods.recipes(args, function(data, response) {
+      callback(data);
+    });
   }
 };

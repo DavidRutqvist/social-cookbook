@@ -8,15 +8,15 @@
 <body>
   @html.include("shared/menu", model)
 
-  <div class="ui main text container">
-    @html.block("content")
-  </div>
+  @html.block("content")
 
   @html.include("shared/footer", model)
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/semantic.min.js"></script>
+  <script src="/public/javascripts/jquery.timeago.js"></script>
+  <script src="/public/javascripts/pace.min.js"></script>
   <script src="/public/javascripts/main.js"></script>
-
+  @html.block("scripts")
 </body>
 </html>

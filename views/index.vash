@@ -1,6 +1,40 @@
 @html.extend('shared/layout', function(model) {
   @html.block('content', function(model) {
-    <h1>@model.title</h1>
-    <p>Welcome @model.firstName to @model.title</p>
-  })
+    <div class="ui main container">
+      <div class="ui link cards">
+        @model.recipes.forEach(function(recipe) {
+          <div data-href="/recipe/@recipe.id" class="card js-link">
+            <div class="image">
+              @if(recipe.image !== undefined && recipe.image !== null){
+                <img src="@recipe.image" />
+              }else{
+                <img src="/public/images/image.png" />
+              }
+            </div>
+            <div class="content">
+              <div class="header">@recipe.title</div>
+              <div class="meta">
+                <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
+              </div>
+            </div>
+            <div class="extra content">
+              <a href="/user/@recipe.byUser.id">
+                <i class="users icon"></a> @recipe.byUser.firstName @recipe.byUser.lastName
+              </a>
+            </div>
+          </div>
+        })
+      </div>
+    </div>
+  });
+
+  @html.block("scripts", function(model) {
+    <script type="text/javascript">
+      $(function() {
+        $(".js-link").click(function() {
+          window.location.href = $(this).data("href");
+        });
+      });
+    </script>
+  });
 })
