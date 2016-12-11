@@ -1,4 +1,5 @@
 var api = require('../apiConsumer');
+var toTitleCase = require('to-title-case');
 
 module.exports = function(router, config) {
   /* GET home page. */
@@ -11,8 +12,8 @@ module.exports = function(router, config) {
               var session = req.session;
               session.userId = req.body.userId;
               session.token = result.token;
-              session.firstName = result.firstName;
-              session.lastName = result.lastName;
+              session.firstName = toTitleCase(result.firstName);
+              session.lastName = toTitleCase(result.lastName);
               return res.redirect("/");
             }
             else {
@@ -28,8 +29,8 @@ module.exports = function(router, config) {
         var session = req.session;
         session.userId = req.body.userId;
         session.token = result.token;
-        session.firstName = result.firstName;
-        session.lastName = result.lastName;
+        session.firstName = toTitleCase(result.firstName);
+        session.lastName = toTitleCase(result.lastName);
         res.redirect("/");
       }
     })
@@ -48,6 +49,11 @@ module.exports = function(router, config) {
         count: response.totalCount,
         recipes: response.recipes
       };
+
+      for(var i = 0; i < model.recipes.length; i++) {
+        model.recipes[i].title = toTitleCase(model.recipes[i].title);
+      }
+
       res.render('index', model);
     });
   });

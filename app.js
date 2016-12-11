@@ -87,6 +87,7 @@ app.use(function(req, res, next) {
 app.use('/', router);
 
 var index = require('./routes/index')(router, config);
+var recipe = require('./routes/recipe')(router);
 
 
 // catch 404 and forward to error handler

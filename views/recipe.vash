@@ -1,0 +1,69 @@
+@html.extend('shared/layout', function(model) {
+  @html.block('content', function(model) {
+    @if(model.image !== undefined && model.image !== null){
+      <div class="column sixteen wide recipe-image" data-original="@model.image"></div>
+    }
+    <div class="ui main container">
+      <div class="ui grid">
+        <div class="column eleven wide">
+          <h1 class="ui header">
+            @model.title
+            <div class="sub header">
+              <time class="timeago date" datetime="@model.creationTime">@model.creationTime</time>
+            </div>
+          </h1>
+          <div class="text">
+            @html.raw(model.content)
+          </div>
+        </div>
+        <div class="column five wide">
+          <div class="ui segment">
+            <h3><i class="icon user"></a> Author</h3>
+            <div class="ui items">
+              <div class="item">
+                <div class="ui tiny image">
+                  <img src="https://graph.facebook.com/v2.8/@model.byUser.id/picture?type=normal" />
+                </div>
+                <div class="content middle aligned">
+                  <a class="header" href="/user/@model.byUser.id">@model.byUser.firstName @model.byUser.lastName</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ui segment">
+            <h3><i class="icon tags"></i> Tags</h3>
+            @model.tags.forEach(function(tag) {
+              <a href="/tag/@tag" class="ui label"><i class="icon tag"></i> @tag</a>
+            })
+          </div>
+          <div class="ui segment">
+            <h3><i class="icon shopping basket"></i> Ingredients</h3>
+            <table class="ui selectable table">
+              <tbody>
+              @model.ingredients.forEach(function(ingredient) {
+                <tr>
+                  <td><strong>@ingredient.name</strong></td>
+                  <td><em>@ingredient.amount @ingredient.unit</em></td>
+                </tr>
+              })
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  });
+
+  @html.block('scripts', function(model) {
+    @if(model.image !== undefined && model.image !== null){
+      <script src="/public/javascripts/jquery.lazyload.js"></script>
+      <script type="text/javascript">
+        $(function () {
+            $(".recipe-image").lazyload({
+                effect: "fadeIn"
+            });
+        });
+      </script>
+    }
+  });
+})
