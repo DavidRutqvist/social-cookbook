@@ -19,6 +19,7 @@ module.exports = function(router, config) {
               session.token = result.token;
               session.firstName = toTitleCase(result.firstName);
               session.lastName = toTitleCase(result.lastName);
+              session.graphToken = req.body.token;
               return res.redirect("/");
             }
             else {
@@ -36,6 +37,7 @@ module.exports = function(router, config) {
         session.token = result.token;
         session.firstName = toTitleCase(result.firstName);
         session.lastName = toTitleCase(result.lastName);
+        session.graphToken = req.body.token;
         res.redirect("/");
       }
     })
@@ -43,6 +45,13 @@ module.exports = function(router, config) {
 
   router.get("/login", function(req, res, next) {
     res.render("login", { title: "Please sign in using Facebook", appId: config.fbAppId });
+  });
+
+  router.get("/logout", function(req, res) {
+    api.logout(req.session.userId, req.session.graphToken, function(success) {
+      req.session = null;
+      res.redirect("/login");
+    });
   });
 
   router.get('/', function(req, res, next) {

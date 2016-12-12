@@ -9,6 +9,7 @@ client.registerMethod("register", apiUrl + "/api/register", "POST");
 client.registerMethod("recipes", apiUrl + "/api/recipes", "GET");
 client.registerMethod("recipe", apiUrl + "/api/recipes/${id}", "GET");
 client.registerMethod("comment", apiUrl + "/api/recipes/${id}/comments", "POST");
+client.registerMethod("logout", "https://graph.facebook.com/v2.8/me/permissions", "DELETE");
 
 //Map methods to module exports functions
 module.exports = {
@@ -28,7 +29,7 @@ module.exports = {
       if(response.statusCode === 401) {
         return callback(new Error("Unauthorized"));
       }
-      
+
       if(data.success === true) {
         callback(undefined, {
           token: data.token,
@@ -147,6 +148,20 @@ module.exports = {
       else {
         callback(new Error(data.message));
       }
+    });
+  },
+  logout: function(userId, fbToken, callback) {
+    console.log("Logging out");
+    var args = {
+      headers: {
+        "Authorization": "OAuth " + fbToken,
+        "Content-Type": "application/json"
+      }
+    };
+    //TODO: How to log out from API as well?
+    client.methods.logout(args, function(data, response) {
+      console.log(data.toString());
+      callback(data.success);
     });
   }
 };
