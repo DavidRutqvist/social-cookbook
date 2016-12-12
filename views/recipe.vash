@@ -59,7 +59,7 @@
               </div>
             </div>
           </div>
-          <div class="ui segment">
+          <div class="ui segment recipe-tags">
             <h3><i class="icon tags"></i> Tags</h3>
             @model.tags.forEach(function(tag) {
               <a href="/tag/@tag" class="ui label"><i class="icon tag"></i> @tag</a>
