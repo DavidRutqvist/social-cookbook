@@ -8,6 +8,7 @@ client.registerMethod("authenticate", apiUrl + "/api/authenticate", "POST");
 client.registerMethod("register", apiUrl + "/api/register", "POST");
 client.registerMethod("recipes", apiUrl + "/api/recipes", "GET");
 client.registerMethod("recipe", apiUrl + "/api/recipes/${id}", "GET");
+client.registerMethod("comment", apiUrl + "/api/recipes/${id}/comments", "POST");
 
 //Map methods to module exports functions
 module.exports = {
@@ -97,6 +98,30 @@ module.exports = {
 
     client.methods.recipe(args, function(data, response) {
       if((data.success === undefined) && (data.id !== undefined)) {
+        callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  },
+  comment: function(token, userId, recipeId, comment, callback) {
+    console.log("Adding comment on recipe with id " + recipeId);
+    var args = {
+      path: {
+        id: recipeId
+      },
+      data: {
+        comment: comment
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.comment(args, function(data, response) {
+      if(data.success === true) {
         callback(undefined, data);
       }
       else {

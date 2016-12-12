@@ -21,4 +21,20 @@ module.exports = function(router) {
       }
     });
   });
+
+  router.post("/recipe/:id/comment", function(req, res) {
+    if((req.body.comment !== undefined) && (req.body.comment !== null) && (req.body.comment !== "")) {
+      api.comment(req.session.token, req.session.userId, req.params.id, req.body.comment, function(err, result) {
+        if(err) {
+          throw err;
+        }
+        else {
+          res.redirect("/recipe/" + req.params.id);
+        }
+      });
+    }
+    else {
+      res.redirect("/recipe/" + req.params.id);
+    }
+  });
 }
