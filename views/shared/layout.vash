@@ -4,6 +4,7 @@
   <title>@model.title | The Social Cookbook</title>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.6/semantic.min.css">
   <link rel="stylesheet" href="/public/stylesheets/style.css" />
+  @html.block("head")
 </head>
 <body>
   @html.include("shared/menu", model)

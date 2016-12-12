@@ -1,7 +1,8 @@
 var apiUrl = require("./config").apiUrl;
 var Client = require('node-rest-client').Client;
 var client = new Client();
-
+var request = require("request");
+var streamBuffers = require('stream-buffers');
 
 //Register methods
 client.registerMethod("authenticate", apiUrl + "/api/authenticate", "POST");
@@ -9,6 +10,7 @@ client.registerMethod("register", apiUrl + "/api/register", "POST");
 client.registerMethod("recipes", apiUrl + "/api/recipes", "GET");
 client.registerMethod("recipe", apiUrl + "/api/recipes/${id}", "GET");
 client.registerMethod("comment", apiUrl + "/api/recipes/${id}/comments", "POST");
+client.registerMethod("addRecipe", apiUrl + "/api/recipes", "POST");
 client.registerMethod("logout", "https://graph.facebook.com/v2.8/me/permissions", "DELETE");
 
 //Map methods to module exports functions
@@ -150,6 +152,73 @@ module.exports = {
       }
     });
   },
+  addRecipe: function(token, title, content, numberOfPortions, tags, ingredients, callback) {
+    console.log("Adding new recipe");
+    var args = {
+      data: {
+        title: title,
+        numberOfPortions: numberOfPortions,
+        content: content,
+        tags: tags,
+        ingredients: ingredients
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+
+    client.methods.addRecipe(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        return callback(undefined, data.recipeId);
+      }
+      else if(data.success === false) {
+        return callback(new Error(data.message));
+      }
+      else {
+        return callback(new Error("Unknown error"));
+      }
+    });
+  },
+  uploadImage: function(token, recipeId, image, callback) {
+    console.log("Setting image for recipe with id " + recipeId);
+    if(image === null) {
+      //Set image to NULL
+      request.put({
+        url: apiUrl + "/api/recipes/" + recipeId + "/image"
+      }, function(err, httpResponse, body) {
+        updateImageCallback(err, httpResponse, body, callback);
+      });
+    }
+    else
+    {
+      console.log(image);
+      var formData = {
+        image: {
+          value: image.buffer,
+          options: {
+            filename: image.originalname,
+            contentType: image.mimetype
+          }
+        }
+      };
+
+      request.put({
+        url: apiUrl + "/api/recipes/" + recipeId + "/image",
+        formData: formData,
+        headers: {
+          "x-access-token": token,
+          "Content-Type": "multipart/form-data"
+        }
+      }, function(err, httpResponse, body) {
+        updateImageCallback(err, httpResponse, body, callback);
+      });
+    }
+  },
   logout: function(userId, fbToken, callback) {
     console.log("Logging out");
     var args = {
@@ -165,3 +234,13 @@ module.exports = {
     });
   }
 };
+
+function updateImageCallback(err, httpResponse, body, callback) {
+  if(err) {
+    throw err;
+  }
+
+  var data = JSON.parse(body);
+
+  callback(data.success);
+}

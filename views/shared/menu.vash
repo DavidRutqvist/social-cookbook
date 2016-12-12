@@ -15,12 +15,17 @@
         </a>
       }
     })
-    <div class="ui right floated simple dropdown item">
-      <img class="profile-picture" src="https://graph.facebook.com/v2.8/@model.user.id/picture" />
-      @model.user.firstName @model.user.lastName <i class="dropdown icon"></i>
-      <div class="menu">
-        <a class="item" href="/profile">Profile</a>
-        <a class="item" href="/logout">Logout</a>
+    <div class="ui right item no-padding">
+      <a class="ui item" href="/recipe/new">
+        <i class="icon add circle"></i> New Recipe
+      </a>
+      <div class="ui dropdown item simple">
+        <img class="profile-picture" src="https://graph.facebook.com/v2.8/@model.user.id/picture" />
+        @model.user.firstName @model.user.lastName <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="/profile">Profile</a>
+          <a class="item" href="/logout">Logout</a>
+        </div>
       </div>
     </div>
   </div>
