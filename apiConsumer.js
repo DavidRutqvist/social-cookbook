@@ -12,6 +12,7 @@ client.registerMethod("recipe", apiUrl + "/api/recipes/${id}", "GET");
 client.registerMethod("comment", apiUrl + "/api/recipes/${id}/comments", "POST");
 client.registerMethod("addRecipe", apiUrl + "/api/recipes", "POST");
 client.registerMethod("logout", "https://graph.facebook.com/v2.8/me/permissions", "DELETE");
+client.registerMethod("tags", apiUrl + "/api/tags", "GET");
 
 //Map methods to module exports functions
 module.exports = {
@@ -218,6 +219,29 @@ module.exports = {
         updateImageCallback(err, httpResponse, body, callback);
       });
     }
+  },
+  getTags: function(token, callback) {
+    console.log("Gettings tags");
+
+    var args = {
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.tags(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === undefined) {
+        callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message), undefined);
+      }
+    });
   },
   logout: function(userId, fbToken, callback) {
     console.log("Logging out");

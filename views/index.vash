@@ -1,29 +1,60 @@
 @html.extend('shared/layout', function(model) {
   @html.block('content', function(model) {
-    <div class="ui main container">
-      <div class="ui link cards">
-        @model.recipes.forEach(function(recipe) {
-          <div data-href="/recipe/@recipe.id" class="card js-link">
-            <div class="image">
-              @if(recipe.image !== undefined && recipe.image !== null){
-                <img src="@recipe.image" />
-              }else{
-                <img src="/public/images/image.png" />
-              }
-            </div>
-            <div class="content">
-              <div class="header">@recipe.title</div>
-              <div class="meta">
-                <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
+    <div class="ui main container wide-container">
+      <div class="ui grid">
+        <div class="column ten wide">
+          <div class="ui link cards">
+            @model.recipes.forEach(function(recipe) {
+              <div data-href="/recipe/@recipe.id" class="card js-link" data-id="@recipe.id" draggable="true">
+                <div class="content">
+                  <div class="right floated">
+                    <i class="heart outline like icon recipe-favorite" data-id="@recipe.id"></i>
+                  </div>
+                  <a href="/user/@recipe.byUser.id">
+                    <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@recipe.byUser.id/picture?type=small"> @recipe.byUser.firstName @recipe.byUser.lastName
+                  </a>
+                </div>
+                <div class="image">
+                  @if(recipe.image !== undefined && recipe.image !== null){
+                    <img src="@recipe.image" />
+                  }else{
+                    <img src="/public/images/image.png" />
+                  }
+                </div>
+                <div class="content">
+                  <div class="header">@recipe.title</div>
+                  <div class="meta">
+                    <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
+                  </div>
+                </div>
+                <div class="extra content">
+
+                </div>
               </div>
-            </div>
-            <div class="extra content">
-              <a href="/user/@recipe.byUser.id">
-                <i class="users icon"></a> @recipe.byUser.firstName @recipe.byUser.lastName
-              </a>
+            })
+          </div>
+        </div>
+        <div class="column three wide">
+          <div class="ui segment">
+            <h3>
+              <i class="icon heart"></i> Favorites
+            </h3>
+          </div>
+        </div>
+        <div class="column three wide">
+          <div class="ui segment">
+            <h3>
+              <i class="icon tags"></i> Popular Tags
+            </h3>
+            <div class="ui list">
+              @model.tags.forEach(function(tag) {
+                <div class="item">
+                  <a href="/tag/@tag.name" class="ui label"><i class="icon tag"></i> @tag.name (@tag.count)</a>
+                </div>
+              })
             </div>
           </div>
-        })
+        </div>
       </div>
     </div>
   });

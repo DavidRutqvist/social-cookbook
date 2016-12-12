@@ -76,7 +76,14 @@ module.exports = function(router, config) {
         model.recipes[i].title = toTitleCase(model.recipes[i].title);
       }
 
-      res.render('index', model);
+      api.getTags(req.session.token, function(err, response) {
+        if(err) {
+          throw err;
+        }
+
+        model.tags = response;
+        res.render('index', model);
+      });
     });
   });
 }
