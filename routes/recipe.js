@@ -5,7 +5,10 @@ module.exports = function(router) {
   router.get("/recipe/:id", function(req, res) {
     api.getRecipe(req.session.token, req.params.id, function(err, result) {
       if(err) {
-        console.log(err);
+        if(err.message === "Unauthorized") {
+          req.session = null;
+          return res.redirect("/login");
+        }
         throw err;//TODO Deal with recipe not found
       }
       else {
@@ -26,6 +29,10 @@ module.exports = function(router) {
     if((req.body.comment !== undefined) && (req.body.comment !== null) && (req.body.comment !== "")) {
       api.comment(req.session.token, req.session.userId, req.params.id, req.body.comment, function(err, result) {
         if(err) {
+          if(err.message === "Unauthorized") {
+            req.session = null;
+            return res.redirect("/login");
+          }
           throw err;
         }
         else {

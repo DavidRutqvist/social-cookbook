@@ -6,6 +6,11 @@ module.exports = function(router, config) {
   router.post("/login", function(req, res, next) {
     api.authenticate(req.body.userId, req.body.token, function(err, result) {
       if(err) {
+        if(err.message === "Unauthorized") {
+          req.session = null;
+          return res.redirect("/login");
+        }
+
         if(err.message === "User not registered") {
           registerAndAuthenticate(req.body.userId, req.body.token, function(success, result) {
             if(success === true) {
@@ -43,9 +48,13 @@ module.exports = function(router, config) {
   router.get('/', function(req, res, next) {
     api.getRecipes(req.session.token, 1, function(err, response) {
       if(err) {
+        if(err.message === "Unauthorized") {
+          req.session = null;
+          return res.redirect("/login");
+        }
         throw err;
       }
-      
+
       var model = {
         title: 'Home',
         page: response.page,
@@ -66,12 +75,20 @@ module.exports = function(router, config) {
 function registerAndAuthenticate(userId, token, callback) {
   api.register(userId, token, function(err, success) {
     if(err) {
+      if(err.message === "Unauthorized") {
+        req.session = null;
+        return res.redirect("/login");
+      }
       throw err;
     }
 
     if(success) {
       api.authenticate(userId, token, function(err, result) {
         if(err) {
+          if(err.message === "Unauthorized") {
+            req.session = null;
+            return res.redirect("/login");
+          }
           throw err;
         }
         else {

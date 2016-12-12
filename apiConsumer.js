@@ -25,6 +25,10 @@ module.exports = {
     };
 
     client.methods.authenticate(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+      
       if(data.success === true) {
         callback(undefined, {
           token: data.token,
@@ -55,6 +59,10 @@ module.exports = {
     };
 
     client.methods.register(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
       if(data.success === true) {
         callback(undefined, true);
       }
@@ -76,6 +84,10 @@ module.exports = {
     };
 
     client.methods.recipes(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
       if(data.success === undefined) {
         callback(undefined, data);
       }
@@ -97,6 +109,10 @@ module.exports = {
     }
 
     client.methods.recipe(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
       if((data.success === undefined) && (data.id !== undefined)) {
         callback(undefined, data);
       }
@@ -121,6 +137,10 @@ module.exports = {
     }
 
     client.methods.comment(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
       if(data.success === true) {
         callback(undefined, data);
       }
