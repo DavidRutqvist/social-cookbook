@@ -20,7 +20,4 @@
       <time class="timeago date" datetime="@model.creationTime">@model.creationTime</time>
     </div>
   </div>
-  <div class="extra content">
-
-  </div>
 </div>

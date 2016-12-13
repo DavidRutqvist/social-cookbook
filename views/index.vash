@@ -31,9 +31,6 @@
                     <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
                   </div>
                 </div>
-                <div class="extra content">
-
-                </div>
               </div>
             })
           </div>
@@ -66,9 +63,6 @@
                     <div class="meta">
                       <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
                     </div>
-                  </div>
-                  <div class="extra content">
-
                   </div>
                 </div>
               })
