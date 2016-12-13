@@ -24,6 +24,25 @@ body {
   margin-top: 2em;
 }
 
+.drop-location {
+  -webkit-transition: background .5s linear;
+  -moz-transition: background .5s linear;
+  -ms-transition: background .5s linear;
+  -o-transition: background .5s linear;
+  transition: background .5s linear;
+
+  -webkit-transition: border-color .5s linear;
+  -moz-transition: border-color .5s linear;
+  -ms-transition: border-color .5s linear;
+  -o-transition: border-color .5s linear;
+  transition: border-color .5s linear;
+
+  &.active {
+    border-color: #aaa;
+    background-color: #eee;
+  }
+}
+
 .ui.footer.segment {
   margin: 5em 0em 0em;
   padding: 5em 0em;

@@ -5,7 +5,7 @@
         <div class="column ten wide">
           <div class="ui link cards">
             @model.recipes.forEach(function(recipe) {
-              <div data-href="/recipe/@recipe.id" class="card js-link recipe-@recipe.id" id="recipe-@recipe.id" data-id="@recipe.id" draggable="true" ondragstart="drag(event)">
+              <div data-href="/recipe/@recipe.id" class="card js-link recipe-@recipe.id" id="recipe-@recipe.id" data-id="@recipe.id" draggable="true" ondragend="dragEnd(event)" ondragstart="drag(event)">
                 <div class="content">
                   <div class="right floated">
                   @if(recipe.isFavorite === true){
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="column three wide">
-          <div class="ui segment" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="ui segment drop-location" ondrop="drop(event)" ondragover="allowDrop(event)">
             <h3>
               <i class="icon heart"></i> Favorites
             </h3>
@@ -135,6 +135,11 @@
 
       function drag(ev) {
         ev.dataTransfer.setData("id", $("#" + ev.target.id).data("id"));
+        $(".drop-location").addClass("raised").addClass("active");
+      }
+
+      function dragEnd(ev) {
+        $(".drop-location").removeClass("raised").removeClass("active");
       }
 
       function drop(ev) {
