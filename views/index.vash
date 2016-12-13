@@ -5,10 +5,14 @@
         <div class="column ten wide">
           <div class="ui link cards">
             @model.recipes.forEach(function(recipe) {
-              <div data-href="/recipe/@recipe.id" class="card js-link" data-id="@recipe.id" draggable="true">
+              <div data-href="/recipe/@recipe.id" class="card js-link recipe-@recipe.id" id="recipe-@recipe.id" data-id="@recipe.id" draggable="true" ondragstart="drag(event)">
                 <div class="content">
                   <div class="right floated">
-                    <i class="heart outline like icon recipe-favorite" data-id="@recipe.id"></i>
+                  @if(recipe.isFavorite === true){
+                    <i class="heart like red icon recipe-favorite" data-id="@recipe.id"></i>
+                  } else {
+                    <i class="heart like outline icon recipe-favorite" data-id="@recipe.id"></i>
+                  }
                   </div>
                   <a href="/user/@recipe.byUser.id">
                     <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@recipe.byUser.id/picture?type=small"> @recipe.byUser.firstName @recipe.byUser.lastName
@@ -35,10 +39,41 @@
           </div>
         </div>
         <div class="column three wide">
-          <div class="ui segment">
+          <div class="ui segment" ondrop="drop(event)" ondragover="allowDrop(event)">
             <h3>
               <i class="icon heart"></i> Favorites
             </h3>
+            <div class="ui link cards" id="favorites">
+              @model.favorites.forEach(function(recipe) {
+                <div data-href="/recipe/@recipe.id" class="card js-link recipe-@recipe.id" id="favorite-@recipe.id" data-id="@recipe.id" draggable="true" ondragstart="drag(event)">
+                  <div class="content">
+                    <div class="right floated">
+                      <i class="heart like red icon recipe-favorite" data-id="@recipe.id"></i>
+                    </div>
+                    <a href="/user/@recipe.byUser.id">
+                      <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@recipe.byUser.id/picture?type=small"> @recipe.byUser.firstName @recipe.byUser.lastName
+                    </a>
+                  </div>
+                  <div class="image">
+                    @if(recipe.image !== undefined && recipe.image !== null){
+                      <img src="@recipe.image" />
+                    }else{
+                      <img src="/public/images/image.png" />
+                    }
+                  </div>
+                  <div class="content">
+                    <div class="header">@recipe.title</div>
+                    <div class="meta">
+                      <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
+                    </div>
+                  </div>
+                  <div class="extra content">
+
+                  </div>
+                </div>
+              })
+            </div>
+
           </div>
         </div>
         <div class="column three wide">
@@ -65,7 +100,54 @@
         $(".js-link").click(function() {
           window.location.href = $(this).data("href");
         });
+
+        bindHeart();
       });
+
+      function bindHeart() {
+        $(".recipe-favorite").unbind("click");
+
+        $(".recipe-favorite").click(function(e) {
+          e.stopPropagation();
+          favoriteToggle($(this).data("id"), false);
+        });
+      }
+
+      function favoriteToggle(recipeId, isDrop) {
+        var heart = $(".recipe-" + recipeId + " .like");
+        if(heart.hasClass("outline")) {
+          $.get("/recipe/" + recipeId + "/favorite", function(data) {
+            $("#favorites").append(data);
+            $("#favorite-" + recipeId + " .timeago").timeago();
+            heart.removeClass("outline");
+            heart.addClass("red");
+            bindHeart();
+          });
+        }
+        else {
+          if(isDrop === false) {
+            $.get("/recipe/" + recipeId + "/unfavorite", function(data) {
+              $("#favorites #favorite-" + recipeId).remove();
+              heart.removeClass("red");
+              heart.addClass("outline");
+            });
+          }
+        }
+      }
+
+      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+
+      function drag(ev) {
+        ev.dataTransfer.setData("id", $("#" + ev.target.id).data("id"));
+      }
+
+      function drop(ev) {
+        ev.preventDefault();
+        var id = ev.dataTransfer.getData("id");
+        favoriteToggle(id, true);
+      }
     </script>
   });
 })

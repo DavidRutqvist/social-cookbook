@@ -13,6 +13,9 @@ client.registerMethod("comment", apiUrl + "/api/recipes/${id}/comments", "POST")
 client.registerMethod("addRecipe", apiUrl + "/api/recipes", "POST");
 client.registerMethod("logout", "https://graph.facebook.com/v2.8/me/permissions", "DELETE");
 client.registerMethod("tags", apiUrl + "/api/tags", "GET");
+client.registerMethod("favorites", apiUrl + "/api/favorites", "GET");
+client.registerMethod("favorite", apiUrl + "/api/recipes/${id}/favorite", "POST");
+client.registerMethod("unfavorite", apiUrl + "/api/recipes/${id}/favorite", "DELETE");
 
 //Map methods to module exports functions
 module.exports = {
@@ -240,6 +243,81 @@ module.exports = {
       }
       else {
         callback(new Error(data.message), undefined);
+      }
+    });
+  },
+  getFavorites: function(token, callback) {
+    console.log("Gettings favorites");
+
+    var args = {
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.favorites(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === undefined) {
+        callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message), undefined);
+      }
+    });
+  },
+  favorite: function(token, recipeId, callback) {
+    console.log("Favoriting recipe with id " + recipeId);
+
+    var args = {
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.favorite(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  },
+  unfavorite: function(token, recipeId, callback) {
+    console.log("Unfavoriting recipe with id " + recipeId);
+
+    var args = {
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.unfavorite(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined);
+      }
+      else {
+        callback(new Error(data.message));
       }
     });
   },

@@ -55,34 +55,49 @@ module.exports = function(router, config) {
   });
 
   router.get('/', function(req, res, next) {
-    api.getRecipes(req.session.token, 1, function(err, response) {
+    api.getFavorites(req.session.token, function(err, response) {
       if(err) {
-        if(err.message === "Unauthorized") {
-          req.session = null;
-          return res.redirect("/login");
-        }
         throw err;
       }
 
       var model = {
         title: 'Home',
-        page: response.page,
-        pageSize: response.pageCount,
-        count: response.totalCount,
-        recipes: response.recipes
+        favorites: response
       };
 
-      for(var i = 0; i < model.recipes.length; i++) {
-        model.recipes[i].title = toTitleCase(model.recipes[i].title);
+      var favoriteIds = [];
+      for(var i = 0; i < model.favorites.length; i++) {
+        favoriteIds[model.favorites[i].id] = true;
+        model.favorites[i].title = toTitleCase(model.favorites[i].title);
       }
 
-      api.getTags(req.session.token, function(err, response) {
+      api.getRecipes(req.session.token, 1, function(err, response) {
         if(err) {
+          if(err.message === "Unauthorized") {
+            req.session = null;
+            return res.redirect("/login");
+          }
           throw err;
         }
 
-        model.tags = response;
-        res.render('index', model);
+        model.page = response.page;
+        model.pageSize = response.pageCount;
+        model.count = response.totalCount;
+        model.recipes = response.recipes;
+
+        for(var i = 0; i < model.recipes.length; i++) {
+          model.recipes[i].title = toTitleCase(model.recipes[i].title);
+          model.recipes[i].isFavorite = ((favoriteIds[model.recipes[i].id] !== undefined) && (favoriteIds[model.recipes[i].id] === true));
+        }
+
+        api.getTags(req.session.token, function(err, response) {
+          if(err) {
+            throw err;
+          }
+
+          model.tags = response;
+          res.render('index', model);
+        });
       });
     });
   });

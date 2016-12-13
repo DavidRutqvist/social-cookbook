@@ -81,6 +81,51 @@ module.exports = function(router) {
     });
   });
 
+  router.get("/recipe/:id/favorite", function(req, res) {
+    api.favorite(req.session.token, req.params.id, function(err) {
+      if(err) {
+        throw err;
+      }
+      else {
+        api.getFavorites(req.session.token, function(err, response) {
+          if(err) {
+            throw err;
+          }
+          else {
+            var favorites = response;
+            var favorite = null;
+
+            for(var i = 0; i < favorites.length; i++) {
+              if(favorites[i].id.toString() === req.params.id.toString()) {
+                favorite = favorites[i];
+              }
+            }
+
+            if(favorite !== null) {
+              favorite.title = toTitleCase(favorite.title);
+              res.render("favorite", favorite);
+            }
+            else {
+              //If we reach this, then favorite was not added
+              res.status(500).send();
+            }
+          }
+        });
+      }
+    });
+  });
+
+  router.get("/recipe/:id/unfavorite", function(req, res) {
+    api.unfavorite(req.session.token, req.params.id, function(err) {
+      if(err) {
+        throw err;
+      }
+      else {
+        res.status(204).send();
+      }
+    });
+  });
+
   router.get("/recipe/:id", function(req, res) {
     api.getRecipe(req.session.token, req.params.id, function(err, result) {
       if(err) {
