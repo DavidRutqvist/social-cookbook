@@ -16,6 +16,7 @@ client.registerMethod("tags", apiUrl + "/api/tags", "GET");
 client.registerMethod("favorites", apiUrl + "/api/favorites", "GET");
 client.registerMethod("favorite", apiUrl + "/api/recipes/${id}/favorite", "POST");
 client.registerMethod("unfavorite", apiUrl + "/api/recipes/${id}/favorite", "DELETE");
+client.registerMethod("recipesByTag", apiUrl + "/api/tags/${tag}", "GET");
 
 //Map methods to module exports functions
 module.exports = {
@@ -318,6 +319,31 @@ module.exports = {
       }
       else {
         callback(new Error(data.message));
+      }
+    });
+  },
+  getRecipesByTag: function(token, tag, callback) {
+    console.log("Getting recipes by tag " + tag);
+    var args = {
+      path: {
+        tag: tag
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+
+    client.methods.recipesByTag(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === undefined) {
+        callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message), undefined);
       }
     });
   },
