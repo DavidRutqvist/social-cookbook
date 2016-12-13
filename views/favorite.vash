@@ -7,12 +7,12 @@
       <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@model.byUser.id/picture?type=small"> @model.byUser.firstName @model.byUser.lastName
     </a>
   </div>
-  <div class="image">
-    @if(model.image !== undefined && model.image !== null){
-      <img src="@model.image" />
-    }else{
-      <img src="/public/images/image.png" />
-    }
+  <div class="image square">
+  @if(model.image !== undefined && model.image !== null){
+    <div class="square" style="background-image: url('@model.image');"></div>
+  }else{
+    <div class="square" style="background-image: url('/public/images/image.png');"></div>
+  }
   </div>
   <div class="content">
     <div class="header">@model.title</div>

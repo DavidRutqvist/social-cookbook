@@ -18,12 +18,12 @@
                     <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@recipe.byUser.id/picture?type=small"> @recipe.byUser.firstName @recipe.byUser.lastName
                   </a>
                 </div>
-                <div class="image">
-                  @if(recipe.image !== undefined && recipe.image !== null){
-                    <img src="@recipe.image" />
-                  }else{
-                    <img src="/public/images/image.png" />
-                  }
+                <div class="image square">
+                @if(recipe.image !== undefined && recipe.image !== null){
+                  <div class="square" style="background-image: url('@recipe.image');"></div>
+                }else{
+                  <div class="square" style="background-image: url('/public/images/image.png');"></div>
+                }
                 </div>
                 <div class="content">
                   <div class="header">@recipe.title</div>
@@ -54,12 +54,12 @@
                       <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@recipe.byUser.id/picture?type=small"> @recipe.byUser.firstName @recipe.byUser.lastName
                     </a>
                   </div>
-                  <div class="image">
-                    @if(recipe.image !== undefined && recipe.image !== null){
-                      <img src="@recipe.image" />
-                    }else{
-                      <img src="/public/images/image.png" />
-                    }
+                  <div class="image square">
+                  @if(recipe.image !== undefined && recipe.image !== null){
+                    <div class="square" style="background-image: url('@recipe.image');"></div>
+                  }else{
+                    <div class="square" style="background-image: url('/public/images/image.png');"></div>
+                  }
                   </div>
                   <div class="content">
                     <div class="header">@recipe.title</div>
