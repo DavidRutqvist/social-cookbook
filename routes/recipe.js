@@ -49,7 +49,7 @@ module.exports = function(router) {
       return res.render("newRecipe", model);
     }
 
-    var tags = req.body.tags.replace(",", " ").replace("  ", " ").split(" ");
+    var tags = req.body.tags.trim().replace(",", " ").replace("  ", " ").split(" ");
     var content = sanitizeHtml(req.body.content, {
       allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'u', 'img', 'ul', 'li', 'ol', 'strike', 'p', 'br' ],
       allowedAttributes: {
