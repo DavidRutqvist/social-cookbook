@@ -91,6 +91,7 @@
   @html.block("scripts", function(model) {
     <script type="text/javascript">
       $(function() {
+        alert("HEJ");
         $(".js-link").click(function() {
           window.location.href = $(this).data("href");
         });
