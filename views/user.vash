@@ -1,0 +1,93 @@
+@html.extend('shared/layout', function(model) {
+  @html.block('content', function(model) {
+    <div class="ui main container">
+      <div class="ui grid">
+        <div class="column eleven wide">
+          <h1 class="ui header">
+            @model.title
+          </h1>
+          <div class="ui link cards">
+            @model.recipes.forEach(function(recipe) {
+              <div data-href="/recipe/@recipe.id" class="card js-link recipe-@recipe.id" id="recipe-@recipe.id" data-id="@recipe.id">
+                <div class="content">
+                  <div class="right floated">
+                  @if(recipe.isFavorite === true){
+                    <i class="heart like red icon recipe-favorite" data-id="@recipe.id"></i>
+                  } else {
+                    <i class="heart like outline icon recipe-favorite" data-id="@recipe.id"></i>
+                  }
+                  </div>
+                  <a href="/user/@recipe.byUser.id">
+                    <img class="ui avatar image" src="https://graph.facebook.com/v2.8/@recipe.byUser.id/picture?type=small"> @recipe.byUser.firstName @recipe.byUser.lastName
+                  </a>
+                </div>
+                <div class="image square">
+                @if(recipe.image !== undefined && recipe.image !== null){
+                  <div class="square" style="background-image: url('@recipe.image');"></div>
+                }else{
+                  <div class="square" style="background-image: url('/public/images/image.png');"></div>
+                }
+                </div>
+                <div class="content">
+                  <div class="header">@recipe.title</div>
+                  <div class="meta">
+                    <time class="timeago date" datetime="@recipe.creationTime">@recipe.creationTime</time>
+                  </div>
+                </div>
+              </div>
+            })
+          </div>
+        </div>
+        <div class="column five wide">
+          <div class="ui segment">
+            <h3><i class="icon user"></a> @model.fullName</h3>
+            <img class="image ui fluid" src="https://graph.facebook.com/v2.8/@model.userId/picture?type=large" />
+          </div>
+      </div>
+    </div>
+  </div>
+  });
+
+  @html.block("scripts", function(model) {
+    <script type="text/javascript">
+      $(function() {
+        $(".js-link").click(function() {
+          window.location.href = $(this).data("href");
+        });
+
+        bindHeart();
+      });
+
+      function bindHeart() {
+        $(".recipe-favorite").unbind("click");
+
+        $(".recipe-favorite").click(function(e) {
+          e.stopPropagation();
+          favoriteToggle($(this).data("id"), false);
+        });
+      }
+
+      function favoriteToggle(recipeId, isDrop) {
+        var heart = $(".recipe-" + recipeId + " .like");
+        if(heart.hasClass("outline")) {
+          $.get("/recipe/" + recipeId + "/favorite", function(data) {
+            $("#favorites").append(data);
+            $("#favorite-" + recipeId + " .timeago").timeago();
+            heart.removeClass("outline");
+            heart.addClass("red");
+            bindHeart();
+          });
+        }
+        else {
+          if(isDrop === false) {
+            $.get("/recipe/" + recipeId + "/unfavorite", function(data) {
+              $("#favorites #favorite-" + recipeId).remove();
+              heart.removeClass("red");
+              heart.addClass("outline");
+            });
+          }
+        }
+      }
+    </script>
+  });
+})
