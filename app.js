@@ -53,7 +53,8 @@ app.use(function(req, res, next) {
       res.locals.user = {
         id: req.session.userId,
         firstName: req.session.firstName,
-        lastName: req.session.lastName
+        lastName: req.session.lastName,
+        isAdmin: req.session.isAdmin
       };
       next();
     }
@@ -76,11 +77,6 @@ app.use(function(req, res, next) {
     active: (req.path == "/")
   });
 
-  next();
-});
-
-app.use(function(req, res, next) {
-  //TODO: Implement authentication
   next();
 });
 

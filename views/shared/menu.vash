@@ -23,6 +23,10 @@
         <img class="profile-picture" src="https://graph.facebook.com/v2.8/@model.user.id/picture" />
         @model.user.firstName @model.user.lastName <i class="dropdown icon"></i>
         <div class="menu">
+        @if(model.user.isAdmin) {
+          <a class="item" href="/users"><i class="protect icon"></i> Users</a>
+          <div class="ui divider"></div>
+        }
           <a class="item" href="/profile">Profile</a>
           <a class="item" href="/logout">Logout</a>
         </div>

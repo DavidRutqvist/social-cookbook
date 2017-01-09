@@ -14,13 +14,9 @@ module.exports = function(router, config) {
         if(err.message === "User not registered") {
           registerAndAuthenticate(req.body.userId, req.body.token, function(success, result) {
             if(success === true) {
-              var session = req.session;
-              session.userId = req.body.userId;
-              session.token = result.token;
-              session.firstName = toTitleCase(result.firstName);
-              session.lastName = toTitleCase(result.lastName);
-              session.graphToken = req.body.token;
-              return res.redirect("/");
+              populateSession(result, req, function() {
+                res.redirect("/");
+              });
             }
             else {
               throw new Error("Could not register user");
@@ -32,13 +28,9 @@ module.exports = function(router, config) {
         }
       }
       else {
-        var session = req.session;
-        session.userId = req.body.userId;
-        session.token = result.token;
-        session.firstName = toTitleCase(result.firstName);
-        session.lastName = toTitleCase(result.lastName);
-        session.graphToken = req.body.token;
-        res.redirect("/");
+        populateSession(result, req, function() {
+          res.redirect("/");
+        });
       }
     })
   });
@@ -100,6 +92,20 @@ module.exports = function(router, config) {
         });
       });
     });
+  });
+}
+
+function populateSession(result, req, callback) {
+  api.getCurrentUser(result.token, function(err, response) {
+      var session = req.session;
+      session.userId = req.body.userId;
+      session.token = result.token;
+      session.firstName = toTitleCase(result.firstName);
+      session.lastName = toTitleCase(result.lastName);
+      session.graphToken = req.body.token;
+      session.isAdmin = response.isAdmin;
+
+      callback();
   });
 }
 

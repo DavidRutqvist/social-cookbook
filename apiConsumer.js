@@ -18,6 +18,7 @@ client.registerMethod("favorite", apiUrl + "/api/recipes/${id}/favorite", "POST"
 client.registerMethod("unfavorite", apiUrl + "/api/recipes/${id}/favorite", "DELETE");
 client.registerMethod("recipesByTag", apiUrl + "/api/tags/${tag}", "GET");
 client.registerMethod("getUser", apiUrl + "/api/users/${id}", "GET");
+client.registerMethod("getCurrent", apiUrl + "/api/me", "GET");
 
 //Map methods to module exports functions
 module.exports = {
@@ -387,6 +388,28 @@ module.exports = {
       }
     });
   },
+  getCurrentUser: function(token, callback) {
+    console.log("Calling /me endpoint");
+    var args = {
+      headers: {
+          "Content-Type": "application/json",
+          "x-access-token": token
+      }
+    }
+
+    client.methods.getCurrent(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"))
+      }
+
+      if(data.success === undefined) {
+        callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  }
 };
 
 function updateImageCallback(err, httpResponse, body, callback) {
