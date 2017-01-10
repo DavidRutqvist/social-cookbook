@@ -23,6 +23,9 @@ client.registerMethod("getUsers", apiUrl + "/api/users", "GET");
 client.registerMethod("getRoles", apiUrl + "/api/roles", "GET");
 client.registerMethod("setRole", apiUrl + "/api/users/${id}", "PUT");
 client.registerMethod("removeRecipe", apiUrl + "/api/recipes/${id}", "DELETE");
+client.registerMethod("getMyLike", apiUrl + "/api/recipes/${id}/likes/me", "GET");
+client.registerMethod("like", apiUrl + "/api/recipes/${id}/likes", "POST");
+client.registerMethod("unlike", apiUrl + "/api/recipes/${id}/likes", "DELETE");
 
 //Map methods to module exports functions
 module.exports = {
@@ -133,6 +136,26 @@ module.exports = {
       else {
         callback(new Error(data.message));
       }
+    });
+  },
+  getMyLike: function(token, recipeId, callback) {
+    console.log("Getting current user's like for recipe with id " + recipeId);
+    var args = {
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.getMyLike(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      callback(data);
     });
   },
   comment: function(token, userId, recipeId, comment, callback) {
@@ -301,6 +324,61 @@ module.exports = {
       }
       else {
         callback(new Error(data.message), undefined);
+      }
+    });
+  },
+  like: function(token, recipeId, type, callback) {
+    console.log("Liking recipe with id " + recipeId + " with like type " + type);
+
+    var args = {
+      path: {
+        id: recipeId
+      },
+      data: {
+        type: type
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.like(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  },
+  unlike: function(token, recipeId, callback) {
+    console.log("Unliking recipe with id " + recipeId);
+
+    var args = {
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.unlike(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined);
+      }
+      else {
+        callback(new Error(data.message));
       }
     });
   },

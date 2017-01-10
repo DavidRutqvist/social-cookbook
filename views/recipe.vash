@@ -6,15 +6,31 @@
     <div class="ui main container">
       <div class="ui grid">
         <div class="column eleven wide">
+          @if(model.user.isAdmin || (model.byUser.id === model.user.id)) {
+            <p><a href="/recipe/@model.id/delete" class="ui button labeled icon red"><i class="icon remove"></i> Remove Recipe</a></p>
+          }
           <h1 class="ui header">
             @model.title
             <div class="sub header">
               <time class="timeago date" datetime="@model.creationTime">@model.creationTime</time>
             </div>
           </h1>
-          @if(model.user.isAdmin || (model.byUser.id === model.user.id)) {
-            <a href="/recipe/@model.id/delete" class="ui button labeled icon red"><i class="icon remove"></i> Remove</a>
-          }
+          <div class="ui buttons mini">
+            <button type="button" id="yum" class="ui green labeled icon button" data-tooltip="Yum">
+            @if(model.currentLike.likes && model.currentLike.type === "yum") {
+              <i class="thumbs up icon"></i> <span id="yum-count">@model.likes.yum</span>
+            } else {
+              <i class="thumbs outline up icon"></i> <span id="yum-count">@model.likes.yum</span>
+            }
+            </button>
+            <button type="button" id="yuck" class="ui yellow right labeled icon button" data-tooltip="Yuck">
+            @if(model.currentLike.likes && model.currentLike.type === "yuck") {
+              <i class="thumbs down icon"></i> <span id="yuck-count">@model.likes.yuck</span>
+            } else {
+              <i class="thumbs outline down icon"></i> <span id="yuck-count">@model.likes.yuck</span>
+            }
+            </button>
+          </div>
           <div class="text">
             @html.raw(model.content)
           </div>
@@ -97,5 +113,72 @@
         });
       </script>
     }
+    <script type="text/javascript">
+      $(function () {
+        $("#yum").click(function() {
+          var currentCount = parseInt($("#yum-count").text());
+          if($("#yum i").hasClass("outline")) {
+            like("yum", function() {
+              $("#yum i").removeClass("outline");
+              currentCount++;
+              $("#yum-count").text(currentCount);
+              maybeRemoveYuck();
+            });
+          }
+          else {
+            unlike(function() {
+              maybeRemoveYum();
+            });
+          }
+        });
+
+        $("#yuck").click(function() {
+          var currentCount = parseInt($("#yuck-count").text());
+          if($("#yuck i").hasClass("outline")) {
+            like("yuck", function() {
+              $("#yuck i").removeClass("outline");
+              currentCount++;
+              $("#yuck-count").text(currentCount);
+              maybeRemoveYum();
+            });
+          }
+          else {
+            unlike(function() {
+              maybeRemoveYuck();
+            });
+          }
+        });
+      });
+
+      function maybeRemoveYuck() {
+        if(!$("#yuck i").hasClass("outline")) {
+          var currentCount = parseInt($("#yuck-count").text());
+          $("#yuck i").addClass("outline");
+          currentCount--;
+          $("#yuck-count").text(currentCount);
+        }
+      }
+
+      function maybeRemoveYum() {
+        if(!$("#yum i").hasClass("outline")) {
+          var currentCount = parseInt($("#yum-count").text());
+          $("#yum i").addClass("outline");
+          currentCount--;
+          $("#yum-count").text(currentCount);
+        }
+      }
+
+      function like(type, callback) {
+        $.get("/recipe/@model.id/" + type, function(data) {
+          callback();
+        });
+      }
+
+      function unlike(callback) {
+        $.get("/recipe/@model.id/unlike", function(data) {
+          callback();
+        });
+      }
+    </script>
   });
 })

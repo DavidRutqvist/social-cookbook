@@ -148,6 +148,66 @@ module.exports = function(router) {
     });
   });
 
+  router.get("/recipe/:id/yum", function(req, res) {
+    //We ease the UI a bit and take care of checking and changeing like type if already liked here instead
+    api.getMyLike(req.session.token, req.params.id, function(current) {
+      if(current.likes && (current.type === "yum")) {
+        //Nothing to do just return
+        res.json({
+          success: true
+        });
+      }
+      else {
+        //Add/Change to yum
+        api.like(req.session.token, req.params.id, "yum", function(err) {
+          if(err) {
+            throw err;
+          }
+
+          res.json({
+            success: true
+          });
+        });
+      }
+    });
+  });
+
+  router.get("/recipe/:id/yuck", function(req, res) {
+    //We ease the UI a bit and take care of checking and changeing like type if already liked here instead
+    api.getMyLike(req.session.token, req.params.id, function(current) {
+      if(current.likes && (current.type === "yuck")) {
+        //Nothing to do just return
+        res.json({
+          success: true
+        });
+      }
+      else {
+        //Add/Change to yuck
+        api.like(req.session.token, req.params.id, "yuck", function(err) {
+          if(err) {
+            throw err;
+          }
+
+          res.json({
+            success: true
+          });
+        });
+      }
+    });
+  });
+
+  router.get("/recipe/:id/unlike", function(req, res) {
+    api.unlike(req.session.token, req.params.id, function(err) {
+      if(err) {
+        throw err;
+      }
+
+      res.json({
+        success: true
+      });
+    });
+  });
+
   router.get("/recipe/:id", function(req, res) {
     api.getRecipe(req.session.token, req.params.id, function(err, result) {
       if(err) {
@@ -159,7 +219,7 @@ module.exports = function(router) {
         if(err.message === "Recipe not found") {
           return res.redirect("/");
         }
-        
+
         throw err;
       }
       else {
@@ -171,7 +231,10 @@ module.exports = function(router) {
           recipe.ingredients[i].name = toTitleCase(recipe.ingredients[i].name);
         }
 
-        res.render("recipe", result);
+        api.getMyLike(req.session.token, req.params.id, function(like) {
+          recipe.currentLike = like;
+          res.render("recipe", recipe);
+        });
       }
     });
   });
