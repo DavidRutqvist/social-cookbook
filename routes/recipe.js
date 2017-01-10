@@ -233,7 +233,10 @@ module.exports = function(router) {
 
         api.getMyLike(req.session.token, req.params.id, function(like) {
           recipe.currentLike = like;
-          res.render("recipe", recipe);
+          api.isFavorite(req.session.token, req.params.id, function(isFavorite) {
+            recipe.isFavorite = isFavorite;
+            res.render("recipe", recipe);
+          });
         });
       }
     });

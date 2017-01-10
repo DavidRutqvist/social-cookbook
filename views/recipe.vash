@@ -31,6 +31,16 @@
             }
             </button>
           </div>
+
+            @if(model.isFavorite) {
+              <button type="button" id="favorite" class="ui mini button red icon" data-tooltip="Favorite">
+                <i class="icon heart"></i>
+              </button>
+            } else {
+              <button type="button" id="favorite" class="ui mini button basic red icon" data-tooltip="Favorite">
+                <i class="icon heart outline red"></i>
+              </button>
+            }
           <div class="text">
             @html.raw(model.content)
           </div>
@@ -148,6 +158,10 @@
             });
           }
         });
+
+        $("#favorite").click(function() {
+          favoriteToggle();
+        });
       });
 
       function maybeRemoveYuck() {
@@ -178,6 +192,24 @@
         $.get("/recipe/@model.id/unlike", function(data) {
           callback();
         });
+      }
+
+      function favoriteToggle() {
+        var heart = $("#favorite i");
+        if(heart.hasClass("outline")) {
+          $.get("/recipe/@model.id/favorite", function(data) {
+            heart.removeClass("outline");
+            heart.removeClass("red");
+            $("#favorite").removeClass("basic");
+          });
+        }
+        else {
+          $.get("/recipe/@model.id/unfavorite", function(data) {
+            $("#favorite").addClass("basic");
+            heart.addClass("red");
+            heart.addClass("outline");
+          });
+        }
       }
     </script>
   });

@@ -26,6 +26,7 @@ client.registerMethod("removeRecipe", apiUrl + "/api/recipes/${id}", "DELETE");
 client.registerMethod("getMyLike", apiUrl + "/api/recipes/${id}/likes/me", "GET");
 client.registerMethod("like", apiUrl + "/api/recipes/${id}/likes", "POST");
 client.registerMethod("unlike", apiUrl + "/api/recipes/${id}/likes", "DELETE");
+client.registerMethod("isFavorite", apiUrl + "/api/recipes/${id}/favorite", "GET");
 
 //Map methods to module exports functions
 module.exports = {
@@ -432,6 +433,27 @@ module.exports = {
       else {
         callback(new Error(data.message));
       }
+    });
+  },
+  isFavorite: function(token, recipeId, callback) {
+    console.log("Checking if recipe with id " + recipeId + " is a favorite");
+
+    var args = {
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.isFavorite(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      callback(data.isFavorite);
     });
   },
   getRecipesByTag: function(token, tag, callback) {
