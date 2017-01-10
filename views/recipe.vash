@@ -12,6 +12,9 @@
               <time class="timeago date" datetime="@model.creationTime">@model.creationTime</time>
             </div>
           </h1>
+          @if(model.user.isAdmin || (model.byUser.id === model.user.id)) {
+            <a href="/recipe/@model.id/delete" class="ui button labeled icon red"><i class="icon remove"></i> Remove</a>
+          }
           <div class="text">
             @html.raw(model.content)
           </div>

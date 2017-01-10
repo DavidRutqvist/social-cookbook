@@ -9,6 +9,9 @@ module.exports = function(router) {
 
     api.getUsers(req.session.token, function(err, response) {
       if(err) {
+        if(err.message === "Unauthorized") {
+          return res.redirect("/");
+        }
         throw err;
       }
 
@@ -33,7 +36,7 @@ module.exports = function(router) {
     if(req.session.isAdmin !== true) {//"Weak check" just for user experience, actual check is made during API-call
       return res.redirect("/");
     }
-    
+
     if(req.body.role) {
       api.setRole(req.session.token, req.params.id, req.body.role, function() {
         res.redirect("/users");

@@ -102,7 +102,8 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   if(err.message === "Unauthorized") {
-    res.redirect("/");
+      req.session = null;
+      return res.redirect("/login");
   }
   else {
     // render the error page

@@ -22,6 +22,7 @@ client.registerMethod("getCurrent", apiUrl + "/api/me", "GET");
 client.registerMethod("getUsers", apiUrl + "/api/users", "GET");
 client.registerMethod("getRoles", apiUrl + "/api/roles", "GET");
 client.registerMethod("setRole", apiUrl + "/api/users/${id}", "PUT");
+client.registerMethod("removeRecipe", apiUrl + "/api/recipes/${id}", "DELETE");
 
 //Map methods to module exports functions
 module.exports = {
@@ -185,6 +186,34 @@ module.exports = {
 
       if(data.success === true) {
         return callback(undefined, data.recipeId);
+      }
+      else if(data.success === false) {
+        return callback(new Error(data.message));
+      }
+      else {
+        return callback(new Error("Unknown error"));
+      }
+    });
+  },
+  deleteRecipe: function(token, recipeId, callback) {
+    console.log("Removing recipe with id " + recipeId);
+    var args = {
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+
+    client.methods.removeRecipe(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        return callback(undefined);
       }
       else if(data.success === false) {
         return callback(new Error(data.message));

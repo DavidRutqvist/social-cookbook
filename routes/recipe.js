@@ -81,6 +81,28 @@ module.exports = function(router) {
     });
   });
 
+  router.get("/recipe/:id/delete", function(req, res) {
+    api.getRecipe(req.session.token, req.params.id, function(err, result) {
+      if(err) {
+        throw err;
+      }
+
+      if(req.session.isAdmin || (result.byUser.id === req.session.userId)) {//Weak check, actual check is made by API
+        api.deleteRecipe(req.session.token, req.params.id, function(err) {
+          if(err) {
+            throw err;
+          }
+          else {
+            res.redirect("/");
+          }
+        });
+      }
+      else {
+        res.redirect("/");
+      }
+    });
+  });
+
   router.get("/recipe/:id/favorite", function(req, res) {
     api.favorite(req.session.token, req.params.id, function(err) {
       if(err) {
@@ -133,7 +155,12 @@ module.exports = function(router) {
           req.session = null;
           return res.redirect("/login");
         }
-        throw err;//TODO Deal with recipe not found
+
+        if(err.message === "Recipe not found") {
+          return res.redirect("/");
+        }
+        
+        throw err;
       }
       else {
         var recipe = result;
