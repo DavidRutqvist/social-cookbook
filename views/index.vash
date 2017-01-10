@@ -91,10 +91,7 @@
   @html.block("scripts", function(model) {
     <script type="text/javascript">
       $(function() {
-        $(".js-link").click(function() {
-          window.location.href = $(this).data("href");
-        });
-
+        bindJsLink();
         bindHeart();
       });
 
@@ -107,6 +104,12 @@
         });
       }
 
+      function bindJsLink() {
+        $(".js-link").click(function() {
+          window.location.href = $(this).data("href");
+        });
+      }
+
       function favoriteToggle(recipeId, isDrop) {
         var heart = $(".recipe-" + recipeId + " .like");
         if(heart.hasClass("outline")) {
@@ -116,6 +119,7 @@
             heart.removeClass("outline");
             heart.addClass("red");
             bindHeart();
+            bindJsLink();
           });
         }
         else {
