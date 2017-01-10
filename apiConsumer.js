@@ -19,6 +19,9 @@ client.registerMethod("unfavorite", apiUrl + "/api/recipes/${id}/favorite", "DEL
 client.registerMethod("recipesByTag", apiUrl + "/api/tags/${tag}", "GET");
 client.registerMethod("getUser", apiUrl + "/api/users/${id}", "GET");
 client.registerMethod("getCurrent", apiUrl + "/api/me", "GET");
+client.registerMethod("getUsers", apiUrl + "/api/users", "GET");
+client.registerMethod("getRoles", apiUrl + "/api/roles", "GET");
+client.registerMethod("setRole", apiUrl + "/api/users/${id}", "PUT");
 
 //Map methods to module exports functions
 module.exports = {
@@ -388,6 +391,50 @@ module.exports = {
       }
     });
   },
+  getUsers: function(token, callback) {
+    console.log("Getting users");
+    var args = {
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.getUsers(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined, data.users);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  },
+  getRoles: function(token, callback) {
+    console.log("Getting roles");
+    var args = {
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.getRoles(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined, data.roles);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  },
   getCurrentUser: function(token, callback) {
     console.log("Calling /me endpoint");
     var args = {
@@ -404,6 +451,34 @@ module.exports = {
 
       if(data.success === undefined) {
         callback(undefined, data);
+      }
+      else {
+        callback(new Error(data.message));
+      }
+    });
+  },
+  setRole: function(token, userId, roleId, callback) {
+    console.log("Setting role with id " + roleId + " for user with id " + userId);
+    var args = {
+      path: {
+        id: userId
+      },
+      data: {
+        role: roleId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    }
+
+    client.methods.setRole(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        callback(undefined);
       }
       else {
         callback(new Error(data.message));

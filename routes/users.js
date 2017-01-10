@@ -2,6 +2,48 @@ var api = require('../apiConsumer');
 var toTitleCase = require('to-title-case');
 
 module.exports = function(router) {
+  router.get("/users", function(req, res) {
+    if(req.session.isAdmin !== true) {//"Weak check" just for user experience, actual check is made during API-call
+      return res.redirect("/");
+    }
+
+    api.getUsers(req.session.token, function(err, response) {
+      if(err) {
+        throw err;
+      }
+
+      var model = {
+        title: "Users",
+        users: response
+      };
+
+      api.getRoles(req.session.token, function(err, roles) {
+        if(err) {
+          throw err;
+        }
+
+        model.roles = roles;
+        console.log(model);
+        res.render("users", model);
+      });
+    });
+  });
+
+  router.post("/users/:id/save", function(req, res) {
+    if(req.session.isAdmin !== true) {//"Weak check" just for user experience, actual check is made during API-call
+      return res.redirect("/");
+    }
+    
+    if(req.body.role) {
+      api.setRole(req.session.token, req.params.id, req.body.role, function() {
+        res.redirect("/users");
+      })
+    }
+    else {
+      res.redirect("/users");
+    }
+  });
+
   router.get("/user/:id", function(req, res) {
     api.getFavorites(req.session.token, function(err, response) {
       if(err) {

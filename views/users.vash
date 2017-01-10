@@ -1,0 +1,87 @@
+@html.extend('shared/layout', function(model) {
+  @html.block('content', function(model) {
+    <div class="ui main container">
+      <div class="ui grid">
+        <div class="column sixteen wide">
+          <h1 class="ui header">
+            @model.title
+          </h1>
+          <table class="ui celled table">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @model.users.forEach(function(user) {
+                <tr>
+                  <td>
+                    @user.userId
+                  </td>
+                  <td>
+                    @user.firstName @user.lastName
+                  </td>
+                  <td>
+                    @user.email
+                  </td>
+                  <td>
+                    @user.role
+                  </td>
+                  <td>
+                    <button data-id="@user.userId" data-name="@user.firstName @user.lastName" data-current-role="@user.role" class="ui icon button edit-user" data-tooltip="Edit user" >
+                      <i class="icon write"></i>
+                    </button>
+                  </td>
+                </tr>
+              })
+            </tbody>
+          </table>
+        </div>
+    </div>
+  </div>
+  <form method="post" id="user-edit-form" class="ui form modal small">
+    <i class="close icon"></i>
+    <div class="header">
+      Edit user <span id="user-name"></span>
+    </div>
+    <div class="content">
+      <div class="field">
+        <label for="role">Role</label>
+        <select id="role" name="role" class="ui fluid dropdown">
+        @model.roles.forEach(function(role) {
+          <option value="@role.roleId">@role.roleName</option>
+        })
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="ui button cancel">Cancel</button>
+      <button type="submit" class="ui button green">OK</button>
+    </div>
+  </form>
+  });
+
+  @html.block("scripts", function(model) {
+    <script type="text/javascript">
+      $(function() {
+        $(".ui.modal").modal();
+
+        $(".edit-user").click(function() {
+          $(".ui.modal #user-name").text($(this).data("name"));
+          $("#user-edit-form").attr("action", "/users/" + $(this).data("id") + "/save");
+          var roleName = $(this).data("current-role");
+          $("#role option").each(function() {
+            if($(this).text() === roleName) {
+              $("#role").val($(this).attr("value"));
+            }
+          });
+          $(".ui.modal").modal("show");
+        });
+      });
+    </script>
+  });
+})
