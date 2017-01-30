@@ -27,6 +27,7 @@ client.registerMethod("getMyLike", apiUrl + "/api/recipes/${id}/likes/me", "GET"
 client.registerMethod("like", apiUrl + "/api/recipes/${id}/likes", "POST");
 client.registerMethod("unlike", apiUrl + "/api/recipes/${id}/likes", "DELETE");
 client.registerMethod("isFavorite", apiUrl + "/api/recipes/${id}/favorite", "GET");
+client.registerMethod("updateRecipe", apiUrl + "/api/recipes/${id}", "PUT");
 
 //Map methods to module exports functions
 module.exports = {
@@ -219,6 +220,41 @@ module.exports = {
       }
     });
   },
+  updateRecipe: function(token, recipeId, title, content, numberOfPortions, tags, ingredients, callback) {
+    console.log("Updating recipe with id " + recipeId);
+    var args = {
+      data: {
+        title: title,
+        numberOfPortions: numberOfPortions,
+        content: content,
+        tags: tags,
+        ingredients: ingredients
+      },
+      path: {
+        id: recipeId
+      },
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": token
+      }
+    };
+
+    client.methods.updateRecipe(args, function(data, response) {
+      if(response.statusCode === 401) {
+        return callback(new Error("Unauthorized"));
+      }
+
+      if(data.success === true) {
+        return callback(undefined);
+      }
+      else if(data.success === false) {
+        return callback(new Error(data.message));
+      }
+      else {
+        return callback(new Error("Unknown error"));
+      }
+    });
+  },
   deleteRecipe: function(token, recipeId, callback) {
     console.log("Removing recipe with id " + recipeId);
     var args = {
@@ -249,10 +285,14 @@ module.exports = {
   },
   uploadImage: function(token, recipeId, image, callback) {
     console.log("Setting image for recipe with id " + recipeId);
-    if(image === null) {
+    if((image === null) || (image === undefined)) {
       //Set image to NULL
       request.put({
-        url: apiUrl + "/api/recipes/" + recipeId + "/image"
+        url: apiUrl + "/api/recipes/" + recipeId + "/image",
+        headers: {
+          "x-access-token": token,
+          "Content-Type": "application/json"
+        }
       }, function(err, httpResponse, body) {
         updateImageCallback(err, httpResponse, body, callback);
       });

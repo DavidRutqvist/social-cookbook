@@ -208,6 +208,132 @@ module.exports = function(router) {
     });
   });
 
+  router.get("/recipe/:id/edit", function(req, res) {
+    api.getRecipe(req.session.token, req.params.id, function(err, result) {
+      if(err) {
+        if(err.message === "Unauthorized") {
+          req.session = null;
+          return res.redirect("/login");
+        }
+
+        if(err.message === "Recipe not found") {
+          return res.redirect("/");
+        }
+
+        throw err;
+      }
+      else {
+        if(req.session.isAdmin || (result.byUser.id === req.session.userId)) {//Weak check, actual check is made by API
+          var recipe = result;
+          recipe.recipeTitle = toTitleCase(result.title);
+          recipe.title = "Edit Recipe: " + toTitleCase(result.title);
+          recipe.tags = recipe.tags.join().split(",").join(" ").split("  ").join(" ").trim();
+
+          for(var i = 0; i < recipe.ingredients.length; i++) {
+            recipe.ingredients[i].name = toTitleCase(recipe.ingredients[i].name);
+          }
+
+          res.render("editRecipe", recipe);
+        }
+        else {
+          res.redirect("/recipe/" + req.params.id);
+        }
+      }
+    });
+  });
+
+
+  router.post("/recipe/:id/edit", upload.single('image'), function(req, res) {
+    api.getRecipe(req.session.token, req.params.id, function(err, result) {
+      if(err) {
+        if(err.message === "Unauthorized") {
+          req.session = null;
+          return res.redirect("/login");
+        }
+
+        if(err.message === "Recipe not found") {
+          return res.redirect("/");
+        }
+
+        throw err;
+      }
+      else {
+        if(req.session.isAdmin || (result.byUser.id === req.session.userId)) {//Weak check, actual check is made by API
+          var model = req.body;
+          var recipeId = req.params.id;
+          model.title = "Edit Recipe: " + result.title;
+          if((req.body.recipeTitle === undefined) || (req.body.recipeTitle === null) || (req.body.recipeTitle === "")) {
+            model.message = "Missing mandatory title";
+            return res.render("editRecipe", model);
+          }
+
+          if((req.body.content === undefined) || (req.body.content === null) || (req.body.content === "")) {
+            model.message = "Missing mandatory content";
+            return res.render("editRecipe", model);
+          }
+
+          if((req.body.numberOfPortions === undefined) || (req.body.numberOfPortions === null) || (req.body.numberOfPortions === "")) {
+            model.message = "Missing mandatory number of portions";
+            return res.render("editRecipe", model);
+          }
+
+          if((req.body.ingredients === undefined) || (req.body.ingredients === null) || (req.body.ingredients === "")) {
+            model.message = "A recipe must contain at least one ingredient";
+            return res.render("editRecipe", model);
+          }
+
+          var ingredients = [];
+          for(var i = 0; i < req.body.ingredients.length; i++) {
+            var ingredient = req.body.ingredients[i];
+            if((ingredient.name === "") && (ingredient.amount === "") && (ingredient.unit === "")) {
+              continue;//Skip
+            }
+
+            if((ingredient.name === "") || (ingredient.amount === "") || (ingredient.unit === "")) {
+              model.message = "The recipe contained incomplete ingredient(s)";
+              return res.render("editRecipe", model);
+            }
+
+            ingredients.push(ingredient);
+          }
+
+          if(ingredients.length === 0) {
+            model.message = "A recipe must contain at least one ingredient";
+            return res.render("editRecipe", model);
+          }
+
+          var tags = req.body.tags.trim().replace(",", " ").replace("  ", " ").split(" ");
+          var content = sanitizeHtml(req.body.content, {
+            allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'u', 'img', 'ul', 'li', 'ol', 'strike', 'p', 'br' ],
+            allowedAttributes: {
+              'a': [ 'href', 'target', 'title' ],
+              'img': [ 'src', 'alt', 'title' ]
+            }
+          });
+
+          api.updateRecipe(req.session.token, recipeId, req.body.recipeTitle, content, req.body.numberOfPortions, tags, ingredients, function(err) {
+            if(err) {
+              model.message = err.message;
+              res.render("editRecipe", model);
+            }
+
+            if(model.updateImage === "true") {
+              api.uploadImage(req.session.token, recipeId, req.file, function(success) {
+                res.redirect("/recipe/" + recipeId);
+              });
+            }
+            else {
+              res.redirect("/recipe/" + recipeId);
+            }
+          });
+        }
+        else {
+          res.redirect("/recipe/" + req.params.id);
+        }
+      }
+    });
+  });
+
   router.get("/recipe/:id", function(req, res) {
     api.getRecipe(req.session.token, req.params.id, function(err, result) {
       if(err) {

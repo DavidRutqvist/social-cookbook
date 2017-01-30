@@ -1,0 +1,155 @@
+@html.extend('shared/layout', function(model) {
+  @html.block('content', function(model) {
+    <div class="ui main container">
+      <form method="post" action="/recipe/@model.id/edit" class="ui form" enctype="multipart/form-data">
+        <div class="ui grid">
+          <div class="ui column ten wide">
+            @if(model.message !== undefined && model.message !== null){
+            <div class="ui icon negative message">
+              <i class="inbox warning circle"></i>
+              <div class="content">
+                <div class="header">
+                  The recipe could not be saved
+                </div>
+                <p>@model.message</p>
+              </div>
+            </div>
+            }
+            <h1>@model.title</h1>
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="recipeTitle" name="recipeTitle" placeholder="Recipe Title" value="@model.recipeTitle" />
+            </div>
+            <div class="field">
+              <label>Number of Portions</label>
+              <input type="text" id="numberOfPortions" name="numberOfPortions" placeholder="4" value="@model.numberOfPortions" />
+            </div>
+            <div class="field">
+              <label>Image</label>
+              @if(model.image) {
+                <div id="removeImageWrapper" class="ui medium image rounded">
+                  <div class="ui dimmer">
+                    <div class="content">
+                      <div class="center">
+                        <button type="button" id="removeImage" class="ui button red labeled icon">
+                          <i class="icon remove"></i>
+                          Remove Image
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <img class="ui image" src="@model.image">
+                </div>
+                <div id="imageUpload">
+                  <input type="file" name="image" />
+                </div>
+                <input type="hidden" name="updateImage" id="updateImage" value="false" />
+              } else {
+                <input type="file" name="image" />
+                <input type="hidden" name="updateImage" id="updateImage" value="true" />
+              }
+            </div>
+            <div class="field">
+              <label>Content</label>
+              <textarea name="content" id="recipeContent">@model.content</textarea>
+            </div>
+            <div class="field">
+              <label>Tags</label>
+              <input type="text" name="tags" value="@model.tags" placeholder="e.g. vegan raw mexican" />
+            </div>
+            <button type="submit" class="ui blue labeled submit icon button">
+              <i class="icon save"></i> Save
+            </button>
+          </div>
+          <div class="ui column six wide">
+            <h3>Ingredients</h3>
+            <table class="ui celled padded table">
+              <thead>
+                <tr>
+                  <th>Ingredient</th>
+                  <th>Amount</th>
+                  <th>Unit</th>
+                  <th>&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody id="ingredientsList">
+              @if(model.tags !== undefined && model.tags !== null){
+                model.ingredients.forEach(function(ingredient) {
+                  <tr>
+                    <td><input type="text" name="ingredients[@model.ingredients.indexOf(ingredient)][name]" value="@ingredient.name" placeholder="Almond Milk" /></td>
+                    <td><input type="text" name="ingredients[@model.ingredients.indexOf(ingredient)][amount]" value="@ingredient.amount" placeholder="2" /></td>
+                    <td><input type="text" name="ingredients[@model.ingredients.indexOf(ingredient)][unit]" value="@ingredient.unit" placeholder="dl" /></td>
+                    <td><button type="button" class="ui icon button red removeIngredient"><i class="remove icon"></i></button></td>
+                  </tr>
+                })
+              }
+              else {
+                <tr>
+                  <td><input type="text" name="ingredients[0][name]" placeholder="Almond Milk" /></td>
+                  <td><input type="text" name="ingredients[0][amount]" placeholder="2" /></td>
+                  <td><input type="text" name="ingredients[0][unit]" placeholder="dl" /></td>
+                  <td><button type="button" class="ui icon button red removeIngredient"><i class="remove icon"></i></button></td>
+                </tr>
+              }
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="4">
+                    <button type="button" id="addIngredient" class="ui blue button labeled icon">
+                      <i class="icon add circle"></i> Add Ingredient
+                    </button>
+                  </th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+  });
+
+  @html.block("scripts", function(model) {
+    <script src="/public/plugins/trumbowyg/trumbowyg.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        bindRemoveIngredient();
+        $('#recipeContent').trumbowyg({
+          btns: ['bold', 'italic', 'underline', 'strikethrough', '|', 'insertImage', 'link', '|', 'unorderedList', 'orderedList'],
+          autoGrow: true
+        });
+
+        $("#addIngredient").click(function() {
+          var index = $("#ingredientsList").children().length;
+          $("#ingredientsList").append("<tr> \
+            <td><input type='text' name='ingredients[" + index + "][name]' placeholder='Almond Milk' /></td> \
+            <td><input type='text' name='ingredients[" + index + "][amount]' placeholder='2' /></td> \
+            <td><input type='text' name='ingredients[" + index + "][unit]' placeholder='dl' /></td> \
+            <td><button type='button' class='ui icon button red removeIngredient'><i class='remove icon'></i></button></td> \
+          </tr>");
+          bindRemoveIngredient();
+        });
+
+        $("#imageUpload").hide();
+        $('#removeImageWrapper')
+          .dimmer({
+            on: 'hover'
+          });
+        $("#removeImage").click(function() {
+          $('#removeImageWrapper').hide();
+          $("#imageUpload").show();
+          $("#updateImage").val("true");
+        });
+      });
+
+      function bindRemoveIngredient() {
+        $(".removeIngredient").click(function() {
+          $(this).closest("tr").remove();
+        });
+      }
+    </script>
+  });
+
+  @html.block("head", function(model) {
+    <link rel="stylesheet" href="/public/plugins/trumbowyg/ui/trumbowyg.min.css">
+  });
+})

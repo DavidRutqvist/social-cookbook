@@ -7,7 +7,10 @@
       <div class="ui grid">
         <div class="column eleven wide">
           @if(model.user.isAdmin || (model.byUser.id === model.user.id)) {
-            <p><a href="/recipe/@model.id/delete" class="ui button labeled icon red"><i class="icon remove"></i> Remove Recipe</a></p>
+            <p>
+              <a href="/recipe/@model.id/delete" class="ui button labeled icon red"><i class="icon remove"></i> Remove Recipe</a>
+              <a href="/recipe/@model.id/edit" class="ui button labeled icon yellow"><i class="icon edit"></i> Edit Recipe</a>
+            </p>
           }
           <h1 class="ui header">
             @model.title
