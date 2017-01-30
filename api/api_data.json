@@ -1606,6 +1606,125 @@
     "groupTitle": "Recipes"
   },
   {
+    "type": "put",
+    "url": "/api/recipes/:id",
+    "title": "Update Recipe",
+    "description": "<p>Updates the specified recipe. The current user must either be creator of the recipe or an administrator.</p>",
+    "name": "Update_a_Recipe",
+    "group": "Recipes",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "x-access-token",
+            "description": "<p>Token obtained using authentication process</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title of recipe</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>HTML content of recipe, will be sanitized by API. Allows simple tags like bold, underline et cetera.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "numberOfPortions",
+            "description": "<p>Number of portions the recipe is following</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Object[]",
+            "optional": false,
+            "field": "ingredients",
+            "description": "<p>List of ingredients</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "ingredients.name",
+            "description": "<p>Name of ingredients</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "ingredients.amount",
+            "description": "<p>Amount of ingredient, may be a decimal</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "ingredients.unit",
+            "description": "<p>Unit which the amount is measured in</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Indicates whether the request was successful</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Status message</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Boolean",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Indicates whether the request was successful</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Status message</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/recipes.js",
+    "groupTitle": "Recipes"
+  },
+  {
     "type": "post",
     "url": "/api/roles",
     "title": "Get roles",
